@@ -18,7 +18,7 @@ function canvasApp(){
 	hammertimerelease = Hammer(theCanvas).on("release",canvasReleased);
 	//theCanvas.addEventListener("mouseover",mouseOver,false);
 	var cat = new Image();
-	cat.src = "/static/cat.jpeg";
+	cat.src = "cat.jpeg";
 	function canvasTouched(e){
 		e.gesture.preventDefault()
 		if(!selectedDrawing){
