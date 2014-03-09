@@ -33,7 +33,7 @@ function canvasApp(){
 		tem1 = e.clientX;
 		tem2 = e.clientY;
 		theCanvas.addEventListener("mousemove",canvasMouseMove,false);
-		newDrawing = new drawObject(e.clientX,e.clientY,e.clientX,e.clientY);
+		newDrawing = new rectObject(e.clientX,e.clientY,e.clientX,e.clientY);
 		drawings.push(newDrawing)
 		function canvasMouseMove(e){
 			//console.log(e)
@@ -58,7 +58,7 @@ function canvasApp(){
 		tem1 = e.targetTouches[0].pageX;
 		tem2 = e.targetTouches[0].pageY;
 		theCanvas.addEventListener("touchmove",canvasTouchMove,false);
-		newDrawing = new drawObject(e.targetTouches[0].pageX,e.targetTouches[0].pageY,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+		newDrawing = new rectObject(e.targetTouches[0].pageX,e.targetTouches[0].pageY,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
 		drawings.push(newDrawing);
 		function canvasTouchMove(e){
 			e.preventDefault();
@@ -81,23 +81,14 @@ function canvasApp(){
 		if(drawings){
 			for(var i=0;i<drawings.length;i++){
 				selectedDrawing = false;
-				var th = 10; //threshold
-				var l = drawings[i].left;
-				var r = drawings[i].right;
-				var t = drawings[i].top;
-				var b = drawings[i].bottom;
-				if(((x<l+th&&x>l-th)&&(y>t-th )&&(y<b+th)) ||
-					((x<r+th)&&(x>r-th)&&(y>t-th )&&(y<b+th)) ||
-					((y<t+th)&&(y>t-th)&&(x>l-th)&&(x<r+th)) ||
-					((y<b+th)&&(y>b-th)&&(x>l-th)&&(x<r+th))
-					){
-					selectedDrawing =  drawings[i];
-					return 
+				if(drawings[i].isSelected(x,y)){
+					selectedDrawing = drawings[i]
+					return
 				}
 			}
 		}
 	}
-	function drawObject(a,b,c,d){
+	function rectObject(a,b,c,d){
 		this.left = (a<c)?a:c;
 		this.right = (this.left==a)?c:a;
 		this.top = (b<d)?b:d;
@@ -109,12 +100,6 @@ function canvasApp(){
 			this.right = this.left+this.width;
 			this.top = y;
 			this.bottom = this.top+this.height;
-			/*var dx = refX-this.left;
-			var dy = refY-this.top;
-			this.left += dx;
-			this.top += dy;
-			this.right -= dx;
-			this.bottom -= dy;*/
 		}
 		this.resize = function(fromX,fromY,toX,toY){
 			this.left = (fromX<toX)?fromX:toX;
@@ -123,6 +108,32 @@ function canvasApp(){
 			this.bottom = (this.top==fromY)?toY:fromY;
 			this.width = this.right - this.top;
 			this.height = this.bottom - this.top;
+		}
+		this.draw = function(){
+			context.save();
+			context.lineWidth =1;
+			context.beginPath();
+			context.moveTo(this.left,this.top);
+			context.lineTo(this.right,this.top);
+			context.lineTo(this.right, this.bottom);
+			context.lineTo(this.left,this.bottom);
+			context.lineTo(this.left,this.top);
+			if(selectedDrawing == this){
+				context.strokeStyle = "#FF0000";
+			}
+			context.stroke();
+			context.restore();	
+		}
+		this.isSelected = function(x,y){
+			var th = 10;//threshold
+			if(((x<this.left+th&&x>this.left-th)&&(y>this.top-th )&&(y<this.bottom+th)) ||
+					((x<this.right+th)&&(x>this.right-th)&&(y>this.top-th )&&(y<this.bottom+th)) ||
+					((y<this.top+th)&&(y>this.top-th)&&(x>this.left-th)&&(x<this.right+th)) ||
+					((y<this.bottom+th)&&(y>this.bottom-th)&&(x>this.left-th)&&(x<this.right+th))
+					){
+					return true;
+				}
+			return false;
 		}
 	}
 	function drawScreen(){
@@ -135,30 +146,7 @@ function canvasApp(){
 	}
 	function render() {
 		for(var i=0;i<drawings.length;i++){
-			if(selectedDrawing == drawings[i]){
-				drawShape("rectangle",drawings[i])
-			}else{
-				drawShape("rectangle",drawings[i])	
-			}
-		}
-	}
-	function drawShape(type,drawObj){
-		switch(type){
-			case "rectangle" : 
-				context.save();
-				context.lineWidth =1;
-				context.beginPath();
-				context.moveTo(drawObj.left,drawObj.top);
-				context.lineTo(drawObj.right,drawObj.top);
-				context.lineTo(drawObj.right, drawObj.bottom);
-				context.lineTo(drawObj.left,drawObj.bottom);
-				context.lineTo(drawObj.left,drawObj.top);
-				if(selectedDrawing == drawObj){
-					context.strokeStyle = "#FF0000";
-				}
-				context.stroke();
-				context.restore();
-				break;
+			drawings[i].draw()
 		}
 	}
 	function Loop() {
