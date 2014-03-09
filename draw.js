@@ -1,4 +1,5 @@
 window.addEventListener("load",eventWindowLoaded,false);
+var toolSelected = "SELECT";
 var deviceAgent = navigator.userAgent.toLowerCase();
 var isTouchDevice = ('ontouchstart' in document.documentElement) || 
 					(deviceAgent.match(/(iphone|ipod|ipad)/) ||
@@ -29,31 +30,84 @@ function canvasApp(){
 	var cat = new Image();
 	cat.src = "cat.jpeg";
 	function canvasMouseDown(e){
-		selectDrawing(e.clientX,e.clientY);
-		tem1 = e.clientX;
-		tem2 = e.clientY;
-		theCanvas.addEventListener("mousemove",canvasMouseMove,false);
-		newDrawing = new rectObject(e.clientX,e.clientY,e.clientX,e.clientY);
-		drawings.push(newDrawing)
-		function canvasMouseMove(e){
-			//console.log(e)
+		switch(toolSelected){
+			case "RECTANGLE" : 
+				newDrawing = new rectObject(e.clientX,e.clientY,e.clientX,e.clientY);
+				tem1 = e.clientX;
+				tem2 = e.clientY;
+				drawings.push(newDrawing);
+				theCanvas.addEventListener("mousemove",canvasMouseNewMove,false);
+				theCanvas.addEventListener("mouseup",function(e){
+					theCanvas.removeEventListener("mousemove",canvasMouseNewMove,false);
+					newDrawing = null;
+				},false);
+				break;
+			case "SELECT" : 
+				selectedDrawing = null;
+				selectDrawing(e.clientX,e.clientY);
+				if(selectedDrawing){
+					theCanvas.addEventListener("mousemove",canvasMouseSelectMove,false);
+					theCanvas.addEventListener("mouseup",function(e){
+						theCanvas.removeEventListener("mousemove",canvasMouseSelectMove,false);;
+						selectedDrawing = null;
+					},false);
+				}
+				break;
+			}
+		function canvasMouseNewMove(e){
+			newDrawing.resize(tem1,tem2,e.clientX,e.clientY);
+			drawScreen();
+		}
+		function canvasMouseSelectMove(e){
 			if(selectedDrawing){
 				selectedDrawing.reposition(e.clientX,e.clientY);
-			}else{
-				if(newDrawing){
-					newDrawing.resize(tem1,tem2,e.clientX,e.clientY);
-				}
 			}
 			drawScreen();
-			theCanvas.addEventListener("mouseup",canvasMouseUp,false);
-			function canvasMouseUp(e){
-				newDrawing = null;
-				selectedDrawing = null;
-			}
+			//console.log("inside canvasMouseSelectMove")
 		}
 	}
 	function canvasTouchStart(e){
 		e.preventDefault();
+		switch(toolSelected){
+			case "RECTANGLE" : 
+				newDrawing = new rectObject(e.targetTouches[0].pageX,e.targetTouches[0].pageY,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+				tem1 = e.targetTouches[0].pageX;
+				tem2 = e.targetTouches[0].pageY;
+				drawings.push(newDrawing);
+				theCanvas.addEventListener("touchmove",canvasTouchNewMove,false);
+				theCanvas.addEventListener("touchend",function(e){
+					e.preventDefault();
+					theCanvas.removeEventListener("touchmove",canvasTouchNewMove,false);
+					newDrawing = null;
+				},false);
+				break;
+			case "SELECT" : 
+				selectedDrawing = null;
+				selectDrawing(e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+				if(selectedDrawing){
+					theCanvas.addEventListener("touchmove",canvasTouchSelectMove,false);
+					theCanvas.addEventListener("touchend",function(e){
+						e.preventDefault();
+						theCanvas.removeEventListener("touchmove",canvasTouchSelectMove,false);;
+						selectedDrawing = null;
+					},false);
+				}
+				break;
+			}
+		function canvasTouchNewMove(e){
+			e.preventDefault();
+			newDrawing.resize(tem1,tem2,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+			drawScreen();
+		}
+		function canvasTouchSelectMove(e){
+			e.preventDefault();
+			if(selectedDrawing){
+				selectedDrawing.reposition(e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+			}
+			drawScreen();
+			//console.log("inside canvasMouseSelectMove")
+		}
+		/*e.preventDefault();
 		selectDrawing(e.targetTouches[0].pageX,e.targetTouches[0].pageY)
 		tem1 = e.targetTouches[0].pageX;
 		tem2 = e.targetTouches[0].pageY;
@@ -75,20 +129,20 @@ function canvasApp(){
 				newDrawing = null;
 				selectedDrawing = null;
 			}
-		}
+		}*/
 	}
 	function selectDrawing(x,y){
 		if(drawings){
 			for(var i=0;i<drawings.length;i++){
-				selectedDrawing = false;
 				if(drawings[i].isSelected(x,y)){
 					selectedDrawing = drawings[i]
-					return
+					return;
 				}
 			}
 		}
 	}
 	function rectObject(a,b,c,d){
+		this.name = "RECTANGLE";
 		this.left = (a<c)?a:c;
 		this.right = (this.left==a)?c:a;
 		this.top = (b<d)?b:d;
@@ -106,7 +160,7 @@ function canvasApp(){
 			this.right = (this.left==fromX)?toX:fromX;
 			this.top = (fromY<toY)?fromY:toY;
 			this.bottom = (this.top==fromY)?toY:fromY;
-			this.width = this.right - this.top;
+			this.width = this.right - this.left;
 			this.height = this.bottom - this.top;
 		}
 		this.draw = function(){
@@ -150,7 +204,7 @@ function canvasApp(){
 		}
 	}
 	function Loop() {
-		//window.setTimeout(Loop, 20);
+		window.setTimeout(Loop, 20);
 		drawScreen();
 	}
 	Loop();
