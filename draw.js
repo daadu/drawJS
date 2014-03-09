@@ -107,29 +107,6 @@ function canvasApp(){
 			drawScreen();
 			//console.log("inside canvasMouseSelectMove")
 		}
-		/*e.preventDefault();
-		selectDrawing(e.targetTouches[0].pageX,e.targetTouches[0].pageY)
-		tem1 = e.targetTouches[0].pageX;
-		tem2 = e.targetTouches[0].pageY;
-		theCanvas.addEventListener("touchmove",canvasTouchMove,false);
-		newDrawing = new rectObject(e.targetTouches[0].pageX,e.targetTouches[0].pageY,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
-		drawings.push(newDrawing);
-		function canvasTouchMove(e){
-			e.preventDefault();
-			if(selectedDrawing){
-				selectedDrawing.reposition(e.targetTouches[0].pageX,e.targetTouches[0].pageY);
-			}else{
-				if(newDrawing){
-					newDrawing.resize(tem1,tem2,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
-				}
-			}
-			drawScreen();
-			theCanvas.addEventListener("touchend",canvasTouchEnd,false);
-			function canvasTouchEnd(e){
-				newDrawing = null;
-				selectedDrawing = null;
-			}
-		}*/
 	}
 	function selectDrawing(x,y){
 		if(drawings){
