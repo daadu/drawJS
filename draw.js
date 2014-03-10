@@ -21,101 +21,155 @@ function canvasApp(){
 	theCanvas.height = 200;
 	var tem1,tem2;
 	var drawings = [];
-	var selectedDrawing,newDrawing;
-	theCanvas.addEventListener("mousedown",canvasMouseDown,false);
+	var selectedDrawing,newDrawing,touchEvent;
+	theCanvas.addEventListener("mousedown",canvasDown,false);
 	//theCanvas.addEventListener("mousemove",doNothing,false);
 	if(isTouchDevice){
-		theCanvas.addEventListener("touchstart",canvasTouchStart,false);
+		theCanvas.addEventListener("touchstart",canvasDown,false);
 	}
 	var cat = new Image();
 	cat.src = "cat.jpeg";
-	function canvasMouseDown(e){
-		switch(toolSelected){
-			case "RECTANGLE" : 
-				newDrawing = new rectObject(e.clientX,e.clientY,e.clientX,e.clientY);
-				tem1 = e.clientX;
-				tem2 = e.clientY;
-				drawings.push(newDrawing);
-				theCanvas.addEventListener("mousemove",canvasMouseNewMove,false);
-				theCanvas.addEventListener("mouseup",function(e){
-					theCanvas.removeEventListener("mousemove",canvasMouseNewMove,false);
-					newDrawing = null;
-				},false);
-				break;
-			case "SELECT" : 
-				selectedDrawing = null;
-				selectDrawing(e.clientX,e.clientY);
-				if(selectedDrawing){
-					theCanvas.addEventListener("mousemove",canvasMouseSelectMove,false);
-					theCanvas.addEventListener("mouseup",function(e){
-						theCanvas.removeEventListener("mousemove",canvasMouseSelectMove,false);;
-						selectedDrawing = null;
-					},false);
-				}
-				break;
-			}
-		function canvasMouseNewMove(e){
-			newDrawing.resize(tem1,tem2,e.clientX,e.clientY);
-			drawScreen();
+	function canvasDown(e){
+		if(e.touches){
+			touchEvent = true;
+			e.preventDefault;
+			tem1 = e.targetTouches[0].pageX;
+			tem2 = e.targetTouches[0].pageY;
+		}else{
+			touchEvent = false;
+			tem1 = e.clientX;
+			tem2 = e.clientY;
 		}
-		function canvasMouseSelectMove(e){
+		if(toolSelected=="SELECT"){
+			selectedDrawing = null;
+			selectDrawing(tem1,tem2);
 			if(selectedDrawing){
-				selectedDrawing.reposition(e.clientX,e.clientY);
-			}
-			drawScreen();
-			//console.log("inside canvasMouseSelectMove")
-		}
-	}
-	function canvasTouchStart(e){
-		e.preventDefault();
-		switch(toolSelected){
-			case "RECTANGLE" : 
-				newDrawing = new rectObject(e.targetTouches[0].pageX,e.targetTouches[0].pageY,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
-				tem1 = e.targetTouches[0].pageX;
-				tem2 = e.targetTouches[0].pageY;
-				drawings.push(newDrawing);
-				theCanvas.addEventListener("touchmove",canvasTouchNewMove,false);
-				theCanvas.addEventListener("touchend",function(e){
-					e.preventDefault();
-					theCanvas.removeEventListener("touchmove",canvasTouchNewMove,false);
-					newDrawing = null;
-				},false);
-				break;
-			case "SELECT" : 
-				selectedDrawing = null;
-				selectDrawing(e.targetTouches[0].pageX,e.targetTouches[0].pageY);
-				if(selectedDrawing){
-					theCanvas.addEventListener("touchmove",canvasTouchSelectMove,false);
+				if(touchEvent){
+					theCanvas.addEventListener("touchmove",canvasSelectMove,false);
 					theCanvas.addEventListener("touchend",function(e){
 						e.preventDefault();
-						theCanvas.removeEventListener("touchmove",canvasTouchSelectMove,false);;
+						theCanvas.removeEventListener("touchmove",canvasSelectMove,false);;
 						selectedDrawing = null;
+						drawScreen();
+					},false);
+				}else{
+					theCanvas.addEventListener("mousemove",canvasSelectMove,false);
+					theCanvas.addEventListener("mouseup",function(e){
+						theCanvas.removeEventListener("mousemove",canvasSelectMove,false);
+						selectedDrawing = null;
+						drawScreen();
 					},false);
 				}
-				break;
 			}
-		function canvasTouchNewMove(e){
-			e.preventDefault();
-			newDrawing.resize(tem1,tem2,e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+		}else{
+			switch(toolSelected){
+				case "RECTANGLE" : 
+					newDrawing = new rectObject(tem1,tem2,tem1,tem2);
+					break;
+				case "LINE" :
+					newDrawing = new lineObject(tem1,tem2,tem1,tem2);
+					break;
+			}
+			drawings.push(newDrawing);
+			if(touchEvent){
+				theCanvas.addEventListener("touchmove",canvasNewMove,false);
+				theCanvas.addEventListener("touchend",function(e){
+					e.preventDefault();
+					theCanvas.removeEventListener("touchmove",canvasNewMove,false);
+					newDrawing = null;
+				},false);
+			}else{
+				theCanvas.addEventListener("mousemove",canvasNewMove,false);
+				theCanvas.addEventListener("mouseup",function(e){
+					theCanvas.removeEventListener("mousemove",canvasNewMove,false);
+					newDrawing = null;
+				},false);
+			}
+		}
+		function canvasNewMove(e){
+			var temx,temy; //temp varaibles
+			if(touchEvent){
+				e.preventDefault();
+				temx = e.targetTouches[0].pageX;
+				temy = e.targetTouches[0].pageY;
+			}else{
+				temx = e.clientX;
+				temy = e.clientY;
+			}
+			newDrawing.resize(tem1,tem2,temx,temy);
 			drawScreen();
 		}
-		function canvasTouchSelectMove(e){
-			e.preventDefault();
+		function canvasSelectMove(e){
+			var temx,temy; //temp varaibles
+			if(touchEvent){
+				e.preventDefault();
+				temx = e.targetTouches[0].pageX;
+				temy = e.targetTouches[0].pageY;
+			}else{
+				temx = e.clientX;
+				temy = e.clientY;
+			}
 			if(selectedDrawing){
-				selectedDrawing.reposition(e.targetTouches[0].pageX,e.targetTouches[0].pageY);
+				selectedDrawing.reposition(temx,temy);
 			}
 			drawScreen();
-			//console.log("inside canvasMouseSelectMove")
 		}
 	}
 	function selectDrawing(x,y){
 		if(drawings){
 			for(var i=0;i<drawings.length;i++){
 				if(drawings[i].isSelected(x,y)){
-					selectedDrawing = drawings[i]
+					selectedDrawing = drawings[i];
 					return;
 				}
 			}
+		}
+	}
+	function lineObject(a,b,c,d){
+		this.name = "LINE";
+		this.x1 = a;
+		this.y1 = b;
+		this.x2 = c;
+		this.y2 = d;
+		this.length = calcDist(this.x1,this.y1,this.x2,this.y2);
+		this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1))
+		this.draw = function(){
+			context.save();
+			context.moveTo(this.x1,this.y1);
+			context.lineTo(this.x2,this.y2);
+			if(selectedDrawing == this){
+				context.strokeStyle = "#FF0000";
+			}
+			context.stroke();
+			context.restore();
+		}
+		this.reposition = function(x,y){
+			//console.log(this)
+			var dx = x - this.x1;
+			var dy = y - this.y1;
+			this.x1 = x;
+			this.y1 = y;
+			this.x2 += dx; 
+			this.y2 += dy;
+		}
+		this.resize = function(a,b,c,d){
+			this.name = "LINE";
+			this.x1 = a;
+			this.y1 = b;
+			this.x2 = c;
+			this.y2 = d;
+			this.length = calcDist(this.x1,this.y1,this.x2,this.y2);
+			this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1))
+		}
+		this.isSelected = function(x,y){
+			var sumDist = calcDist(x,y,this.x1,this.y1) + calcDist(x,y,this.x2,this.y2);//sum distance form clicked point to x1,y1 and x2,y2
+			var th = 5; //threshold
+			console.log(this.slope)
+			if(this.length>sumDist-th){
+				console.log("selected")
+				return true
+			}
+			return false;
 		}
 	}
 	function rectObject(a,b,c,d){
@@ -180,8 +234,11 @@ function canvasApp(){
 			drawings[i].draw()
 		}
 	}
+	function calcDist(x1,y1,x2,y2){
+		return Math.floor(Math.sqrt(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2))))
+	}
 	function Loop() {
-		window.setTimeout(Loop, 20);
+		//window.setTimeout(Loop, 20);
 		drawScreen();
 	}
 	Loop();
