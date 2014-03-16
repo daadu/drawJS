@@ -10,6 +10,8 @@ var isTouchDevice = ('ontouchstart' in document.documentElement) ||
 					deviceAgent.match(/ipod/i) || 
 					deviceAgent.match(/blackberry/i) || 
 					deviceAgent.match(/bada/i));
+
+					
 var theCanvas=document.getElementById("canvas");
 var context = canvas.getContext("2d");
 theCanvas.width = 300;

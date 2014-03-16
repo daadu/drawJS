@@ -6,6 +6,7 @@ function lineObject(a,b,c,d){
 	this.y2 = d;
 	this.length = calcDist(this.x1,this.y1,this.x2,this.y2);
 	this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1));
+	
 	this.drawWhenSelect = function(){
 		context.save();
 		var off = 3;//away from selected drawing
