@@ -132,17 +132,27 @@ function canvasApp(){
 		this.x2 = c;
 		this.y2 = d;
 		this.length = calcDist(this.x1,this.y1,this.x2,this.y2);
-		this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1))
+		this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1));
+		this.drawWhenSelect = function(){
+			context.save();
+			var off = 3;//away from selected drawing
+			context.moveTo(this.x1-off,this.y1-off);
+			context.lineTo(this.x2+off,this.y1-off);
+			context.lineTo(this.x2+off,this.y2+off);
+			context.lineTo(this.x1-off,this.y2+off);
+			context.lineTo(this.x1-off,this.y1-off);;
+			context.strokeStyle = "#FF0000";
+			context.stroke();;
+			context.restore();
+		};
 		this.draw = function(){
 			context.save();
 			context.moveTo(this.x1,this.y1);
 			context.lineTo(this.x2,this.y2);
-			if(selectedDrawing == this){
-				context.strokeStyle = "#FF0000";
-			}
+			context.strokeStyle = "#000000";
 			context.stroke();
 			context.restore();
-		}
+		};
 		this.reposition = function(x,y){
 			//console.log(this)
 			var dx = x - this.x1;
@@ -151,7 +161,7 @@ function canvasApp(){
 			this.y1 = y;
 			this.x2 += dx; 
 			this.y2 += dy;
-		}
+		};
 		this.resize = function(a,b,c,d){
 			this.name = "LINE";
 			this.x1 = a;
@@ -231,8 +241,9 @@ function canvasApp(){
 	}
 	function render() {
 		for(var i=0;i<drawings.length;i++){
-			drawings[i].draw()
+			drawings[i].draw();
 		}
+		selectedDrawing.drawWhenSelect();
 	}
 	function calcDist(x1,y1,x2,y2){
 		return Math.floor(Math.sqrt(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2))))
