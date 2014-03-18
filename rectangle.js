@@ -1,3 +1,5 @@
+'use strict';
+
 function rectObject(a,b,c,d){
 	this.name = "RECTANGLE";
 	this.left = (a<c)?a:c;
@@ -6,6 +8,9 @@ function rectObject(a,b,c,d){
 	this.bottom = (this.top==b)?d:b;
 	this.width = this.right - this.left;
 	this.height = this.bottom - this.top;
+	this.drawWhenSelect = function(){
+		
+	}
 	this.reposition = function(x,y){
 		this.left = x;
 		this.right = this.left+this.width;

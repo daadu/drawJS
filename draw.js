@@ -1,3 +1,5 @@
+'use strict';
+
 window.addEventListener("load",eventWindowLoaded,false);
 var toolSelected = "SELECT";
 var deviceAgent = navigator.userAgent.toLowerCase();
@@ -11,26 +13,76 @@ var isTouchDevice = ('ontouchstart' in document.documentElement) ||
 					deviceAgent.match(/blackberry/i) || 
 					deviceAgent.match(/bada/i));
 
-					
+
 var theCanvas=document.getElementById("canvas");
 var context = canvas.getContext("2d");
 theCanvas.width = 300;
 theCanvas.height = 200;
+
 var tem1,tem2;
 var drawings = [];
-var selectedDrawing,newDrawing,touchEvent;
+var selectedDrawing,newDrawing;
+
+var cat = new Image();
+cat.src = "cat.jpeg";
 function eventWindowLoaded(){
 	canvasApp();
+	drawScreen();
 }
+function drawScreen(){
+	console.log("draw scree",drawings)
+	theCanvas.width = theCanvas.width;
+	context.save();
+	context.globalAlpha = 0.3;
+	context.drawImage(cat,0,0,cat.width,cat.height,0,0,theCanvas.width,theCanvas.height);
+	context.restore();
+	for(var i=0;i<drawings.length;i++){
+		drawings[i].draw();
+	}
+	if(selectedDrawing){
+		selectedDrawing.drawWhenSelect();
+	}
+};
 function canvasApp(){
 	theCanvas.addEventListener("mousedown",canvasDown,false);
 	//theCanvas.addEventListener("mousemove",doNothing,false);
 	if(isTouchDevice){
 		theCanvas.addEventListener("touchstart",canvasDown,false);
 	}
-	var cat = new Image();
-	cat.src = "cat.jpeg";
 	function canvasDown(e){
+		console.log("mouse down",drawings)
+		var x,y,eventType;
+		if(e.touches){
+			e.preventDefault;
+			x = e.targetTouches[0].pageX;
+			y = e.targetTouches[0].pageY;
+			eventType = "touch";
+		}else{
+			x = e.clientX;
+			y = e.clientY;
+			eventType = "mouse";
+		}
+		switch(toolSelected){
+			case "SELECT" : 
+				selectedDrawing = null;
+				selectDrawing(x,y);
+				selectEvent(eventType,x,y);
+				break;
+			case "RECTANGLE" : 
+				newDrawing = new rectObject(x,y,x,y);
+				drawings.push(newDrawing)
+				newDrawEvent(eventType,x,y);
+				break;
+			case "LINE" :
+				newDrawing = new lineObject(x,y,x,y);
+				drawings.push(newDrawing);
+				newDrawEvent(eventType,x,y);
+				break;
+		}
+	}
+	/*var touchEvent;
+	function canvasDown(e){
+		console.log(e)
 		if(e.touches){
 			touchEvent = true;
 			e.preventDefault;
@@ -50,14 +102,14 @@ function canvasApp(){
 					theCanvas.addEventListener("touchend",function(e){
 						e.preventDefault();
 						theCanvas.removeEventListener("touchmove",canvasSelectMove,false);;
-						selectedDrawing = null;
+						//selectedDrawing = null;
 						drawScreen();
 					},false);
 				}else{
 					theCanvas.addEventListener("mousemove",canvasSelectMove,false);
 					theCanvas.addEventListener("mouseup",function(e){
 						theCanvas.removeEventListener("mousemove",canvasSelectMove,false);
-						selectedDrawing = null;
+						//selectedDrawing = null;
 						drawScreen();
 					},false);
 				}
@@ -77,13 +129,17 @@ function canvasApp(){
 				theCanvas.addEventListener("touchend",function(e){
 					e.preventDefault();
 					theCanvas.removeEventListener("touchmove",canvasNewMove,false);
+					selectedDrawing = newDrawing;
 					newDrawing = null;
+					drawScreen();
 				},false);
 			}else{
 				theCanvas.addEventListener("mousemove",canvasNewMove,false);
 				theCanvas.addEventListener("mouseup",function(e){
 					theCanvas.removeEventListener("mousemove",canvasNewMove,false);
+					selectedDrawing = newDrawing;
 					newDrawing = null;
+					drawScreen()
 				},false);
 			}
 		}
@@ -115,7 +171,7 @@ function canvasApp(){
 			}
 			drawScreen();
 		}
-	}
+	}*/
 	function selectDrawing(x,y){
 		if(drawings){
 			for(var i=0;i<drawings.length;i++){
@@ -126,25 +182,4 @@ function canvasApp(){
 			}
 		}
 	}
-	function drawScreen(){
-		theCanvas.width = theCanvas.width;
-		context.save();
-		context.globalAlpha = 0.3;
-		context.drawImage(cat,0,0,cat.width,cat.height,0,0,theCanvas.width,theCanvas.height);
-		context.restore();
-		render();
-	}
-	function render() {
-		for(var i=0;i<drawings.length;i++){
-			drawings[i].draw();
-		}
-		if(selectedDrawing){
-			selectedDrawing.drawWhenSelect();
-		}
-	}
-	function Loop() {
-		//window.setTimeout(Loop, 20);
-		drawScreen();
-	}
-	Loop();
 }

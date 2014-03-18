@@ -1,3 +1,5 @@
+'use strict';
+
 function lineObject(a,b,c,d){
 	this.name = "LINE";
 	this.x1 = a;
@@ -6,7 +8,7 @@ function lineObject(a,b,c,d){
 	this.y2 = d;
 	this.length = calcDist(this.x1,this.y1,this.x2,this.y2);
 	this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1));
-	
+
 	this.drawWhenSelect = function(){
 		context.save();
 		var off = 3;//away from selected drawing
@@ -16,7 +18,7 @@ function lineObject(a,b,c,d){
 		context.lineTo(this.x1,this.y2);
 		context.lineTo(this.x1,this.y1);
 		context.strokeStyle = "#FF0000";
-		context.stroke();;
+		context.stroke();
 		context.restore();
 	};
 	this.draw = function(){
