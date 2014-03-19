@@ -37,7 +37,9 @@ function drawScreen(){
 	context.drawImage(cat,0,0,cat.width,cat.height,0,0,theCanvas.width,theCanvas.height);
 	context.restore();
 	for(var i=0;i<drawings.length;i++){
-		drawings[i].draw();
+        if(drawings[i]!==selectedDrawing){
+		  drawings[i].draw();
+        }
 	}
 	if(selectedDrawing){
 		selectedDrawing.drawWhenSelect();
@@ -64,8 +66,7 @@ function canvasApp(){
 		}
 		switch(toolSelected){
 			case "SELECT" : 
-				selectedDrawing = null;
-				selectDrawing(x,y);
+				selectedDrawing = selectDrawing(x,y);
 				selectEvent(eventType,x,y);
 				break;
 			case "RECTANGLE" : 
@@ -174,10 +175,10 @@ function canvasApp(){
 	}*/
 	function selectDrawing(x,y){
 		if(drawings){
+            selectedDrawing = null;
 			for(var i=0;i<drawings.length;i++){
 				if(drawings[i].isSelected(x,y)){
-					selectedDrawing = drawings[i];
-					return;
+					return drawings[i];
 				}
 			}
 		}

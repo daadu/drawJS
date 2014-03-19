@@ -1,17 +1,27 @@
 'use strict';
 
-function rectObject(a,b,c,d){
+function rectObject(a, b, c, d){
 	this.name = "RECTANGLE";
-	this.left = (a<c)?a:c;
+	this.left = (a < c) ?a:c;
 	this.right = (this.left==a)?c:a;
 	this.top = (b<d)?b:d;
 	this.bottom = (this.top==b)?d:b;
 	this.width = this.right - this.left;
 	this.height = this.bottom - this.top;
 	this.drawWhenSelect = function(){
-		
+        context.save();
+		context.lineWidth =1;
+        context.strokeStyle = "#FF0000";
+		context.beginPath();
+		context.moveTo(this.left,this.top);
+		context.lineTo(this.right,this.top);
+		context.lineTo(this.right, this.bottom);
+		context.lineTo(this.left,this.bottom);
+		context.lineTo(this.left,this.top);
+        context.stroke();
+        context.restore();
 	}
-	this.reposition = function(x,y){
+	this.reposition = function(x, y){
 		this.left = x;
 		this.right = this.left+this.width;
 		this.top = y;
@@ -34,9 +44,7 @@ function rectObject(a,b,c,d){
 		context.lineTo(this.right, this.bottom);
 		context.lineTo(this.left,this.bottom);
 		context.lineTo(this.left,this.top);
-		if(selectedDrawing == this){
-			context.strokeStyle = "#FF0000";
-		}
+        //context.strokeStyle = "#000000";
 		context.stroke();
 		context.restore();	
 	}

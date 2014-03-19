@@ -12,25 +12,23 @@ function lineObject(a,b,c,d){
 	this.drawWhenSelect = function(){
 		context.save();
 		var off = 3;//away from selected drawing
-		context.moveTo(this.x1,this.y1);
-		context.lineTo(this.x2,this.y1);
+        context.lineWidth =1;
+        context.strokeStyle = "#FF0000";
+        context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
-		context.lineTo(this.x1,this.y2);
-		context.lineTo(this.x1,this.y1);
-		context.strokeStyle = "#FF0000";
 		context.stroke();
 		context.restore();
 	};
 	this.draw = function(){
 		context.save();
+        context.lineWidth =1;
+        //context.strokeStyle = "#000000";
 		context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
-		context.strokeStyle = "#000000";
 		context.stroke();
 		context.restore();
 	};
 	this.reposition = function(x,y){
-		//console.log(this)
 		var dx = x - this.x1;
 		var dy = y - this.y1;
 		this.x1 = x;
