@@ -10,23 +10,27 @@ function lineObject(a,b,c,d){
 	this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1));
 
 	this.drawWhenSelect = function(){
-		//context.save();
 		var off = 3;//away from selected drawing
+		context.restore();
         context.lineWidth =1;
         context.strokeStyle = "#FF0000";
+        context.beginPath();
         context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
 		context.stroke();
-		//context.restore();
+		context.closePath();
+		context.save();
 	};
 	this.draw = function(){
-		//context.save();
+		context.restore();
         context.lineWidth =1;
         context.strokeStyle = "#000000";
+        context.beginPath();
 		context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
 		context.stroke();
-		//context.restore();
+		context.closePath();
+		context.save();
 	};
 	this.reposition = function(x,y){
 		var dx = x - this.x1;

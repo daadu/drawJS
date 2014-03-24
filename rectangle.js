@@ -9,7 +9,7 @@ function rectObject(a, b, c, d){
 	this.width = this.right - this.left;
 	this.height = this.bottom - this.top;
 	this.drawWhenSelect = function(){
-        context.save();
+		context.restore();
 		context.lineWidth =1;
         context.strokeStyle = "#FF0000";
 		context.beginPath();
@@ -19,7 +19,8 @@ function rectObject(a, b, c, d){
 		context.lineTo(this.left,this.bottom);
 		context.lineTo(this.left,this.top);
         context.stroke();
-        context.restore();
+        context.closePath();
+        context.save();
 	}
 	this.reposition = function(x, y){
 		this.left = x;
@@ -36,7 +37,7 @@ function rectObject(a, b, c, d){
 		this.height = this.bottom - this.top;
 	}
 	this.draw = function(){
-		context.save();
+		context.restore();
 		context.lineWidth =1;
 		context.beginPath();
 		context.moveTo(this.left,this.top);
@@ -46,7 +47,8 @@ function rectObject(a, b, c, d){
 		context.lineTo(this.left,this.top);
         context.strokeStyle = "#000000";
 		context.stroke();
-		context.restore();	
+		context.closePath();
+		context.save();	
 	}
 	this.isSelected = function(x,y){
 		var th = 10;//threshold
