@@ -7,7 +7,7 @@ function selectEvent(eventType,x,y){
 			theCanvas.addEventListener("touchend",function(e){
 				e.preventDefault();
 				theCanvas.removeEventListener("touchmove",canvasSelectMove,false);;
-				//selectedDrawing = null;
+				selectedDrawing = null;
 				drawScreen();
 			},false);
 		}
@@ -15,7 +15,7 @@ function selectEvent(eventType,x,y){
 			theCanvas.addEventListener("mousemove",canvasSelectMove,false);
 			theCanvas.addEventListener("mouseup",function(e){
 				theCanvas.removeEventListener("mousemove",canvasSelectMove,false);
-				//selectedDrawing = null;
+				selectedDrawing = null;
 				drawScreen();
 			},false);
 		}

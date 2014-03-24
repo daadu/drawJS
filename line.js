@@ -10,23 +10,23 @@ function lineObject(a,b,c,d){
 	this.slope = Math.atan((this.y2-this.y1)/(this.x2-this.x1));
 
 	this.drawWhenSelect = function(){
-		context.save();
+		//context.save();
 		var off = 3;//away from selected drawing
         context.lineWidth =1;
         context.strokeStyle = "#FF0000";
         context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
 		context.stroke();
-		context.restore();
+		//context.restore();
 	};
 	this.draw = function(){
-		context.save();
+		//context.save();
         context.lineWidth =1;
-        //context.strokeStyle = "#000000";
+        context.strokeStyle = "#000000";
 		context.moveTo(this.x1,this.y1);
 		context.lineTo(this.x2,this.y2);
 		context.stroke();
-		context.restore();
+		//context.restore();
 	};
 	this.reposition = function(x,y){
 		var dx = x - this.x1;
@@ -48,9 +48,9 @@ function lineObject(a,b,c,d){
 	this.isSelected = function(x,y){
 		var sumDist = calcDist(x,y,this.x1,this.y1) + calcDist(x,y,this.x2,this.y2);//sum distance form clicked point to x1,y1 and x2,y2
 		var th = 5; //threshold
-		console.log(this.slope)
+		//console.log(this.slope)
 		if(this.length>sumDist-th){
-			console.log("selected")
+			//console.log("selected")
 			return true
 		}
 		return false;

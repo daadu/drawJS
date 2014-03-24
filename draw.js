@@ -66,7 +66,9 @@ function canvasApp(){
 		}
 		switch(toolSelected){
 			case "SELECT" : 
-				selectedDrawing = selectDrawing(x,y);
+                if(!selectedDrawing){
+                    selectedDrawing = selectDrawing(x,y);
+                }
 				selectEvent(eventType,x,y);
 				break;
 			case "RECTANGLE" : 

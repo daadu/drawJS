@@ -44,7 +44,7 @@ function rectObject(a, b, c, d){
 		context.lineTo(this.right, this.bottom);
 		context.lineTo(this.left,this.bottom);
 		context.lineTo(this.left,this.top);
-        //context.strokeStyle = "#000000";
+        context.strokeStyle = "#000000";
 		context.stroke();
 		context.restore();	
 	}
